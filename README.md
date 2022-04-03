@@ -105,7 +105,7 @@ use Fyre\CSP\Middleware\CspMiddleware;
 ```
 
 - `$options` is an array containing options for the middleware.
-    - `default` is an array containing the default directives, and will default to *[]*.
+    - `policy` is an array containing the policy directives, and will default to *[]*.
     - `report` is an array containing the report-only directives, and will default to *null*.
     - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
 
