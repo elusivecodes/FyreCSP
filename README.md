@@ -32,6 +32,8 @@ use Fyre\Security\CspBuilder;
 
 Add CSP headers to a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).
 
+- `$response` is a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).
+
 ```php
 CspBuilder::addHeaders($response);
 ```
