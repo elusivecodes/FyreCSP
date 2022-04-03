@@ -1,6 +1,6 @@
 {
     "name": "fyre/csp",
-    "description": "A content secyrity policy library.",
+    "description": "A content security policy library.",
     "type": "library",
     "license": "MIT",
     "authors": [
