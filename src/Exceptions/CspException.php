@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Fyre\CSP\Exceptions;
 
 use
-    RunTimeException;
+    Fyre\Error\Exceptions\Exception;
 
 /**
  * CspException
  */
-class CspException extends RunTimeException
+class CspException extends Exception
 {
 
     public static function forInvalidDirective(string $directive)
