@@ -22,7 +22,7 @@ composer require fyre/csp
 In PHP:
 
 ```php
-use Fyre\Security\CspBuilder;
+use Fyre\CSP\CspBuilder;
 ```
 
 
