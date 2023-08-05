@@ -148,9 +148,9 @@ $header = $policy->getHeader();
 
 **Has Directive**
 
-- `$directive` is a string representing the directive.
-
 Determine if a directive exists.
+
+- `$directive` is a string representing the directive.
 
 ```php
 $hasDirective = $policy->hasDirective($directive);
