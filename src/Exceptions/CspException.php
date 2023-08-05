@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Fyre\CSP\Exceptions;
+namespace Fyre\Security\Exceptions;
 
-use
-    RuntimeException;
+use RuntimeException;
 
 /**
  * CspException

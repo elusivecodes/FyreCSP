@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\CSP\Middleware\CspMiddleware,
-    Fyre\Middleware\MiddlewareQueue,
-    Fyre\Middleware\RequestHandler,
-    Fyre\Server\ServerRequest,
-    PHPUnit\Framework\TestCase;
+use Fyre\Security\Middleware\CspMiddleware;
+use Fyre\Middleware\MiddlewareQueue;
+use Fyre\Middleware\RequestHandler;
+use Fyre\Server\ServerRequest;
+use PHPUnit\Framework\TestCase;
 
 final class CspMiddlewareTest extends TestCase
 {
@@ -16,7 +15,7 @@ final class CspMiddlewareTest extends TestCase
     public function testPolicy(): void
     {
         $middleware = new CspMiddleware([
-            'policy' => [
+            'default' => [
                 'default-src' => 'self'
             ]
         ]);
@@ -25,7 +24,7 @@ final class CspMiddlewareTest extends TestCase
         $queue->add($middleware);
 
         $handler = new RequestHandler($queue);
-        $request = new ServerRequest;
+        $request = new ServerRequest();
 
         $response = $handler->handle($request);
 
@@ -34,8 +33,7 @@ final class CspMiddlewareTest extends TestCase
             $response->getHeaderValue('Content-Security-Policy')
         );
 
-        $this->assertSame(
-            '',
+        $this->assertNull(
             $response->getHeaderValue('Content-Security-Policy-Report-Only')
         );
     }
@@ -62,7 +60,7 @@ final class CspMiddlewareTest extends TestCase
         $queue->add($middleware);
 
         $handler = new RequestHandler($queue);
-        $request = new ServerRequest;
+        $request = new ServerRequest();
 
         $response = $handler->handle($request);
 

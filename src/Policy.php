@@ -1,18 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Fyre\CSP;
+namespace Fyre\Security;
 
-use
-    Fyre\CSP\Exceptions\CspException;
+use Fyre\Security\Exceptions\CspException;
 
-use function
-    array_keys,
-    array_map,
-    implode,
-    in_array,
-    is_strring,
-    preg_match;
+use function array_key_exists;
+use function array_map;
+use function implode;
+use function in_array;
+use function is_string;
+use function preg_match;
 
 /**
  * Policy
@@ -69,7 +67,23 @@ class Policy
     public function __construct(array $directives = [])
     {
         foreach ($directives AS $directive => $values) {
-            $this->addDirective($directive, $values);
+            static::checkDirective($directive);
+
+            if ($values === false) {
+                continue;
+            }
+
+            $this->directives[$directive] = [];
+
+            if ($values === true) {
+                $values = [];
+            } else if (is_string($values)) {
+                $values = [$values];
+            }
+
+            foreach ($values AS $v) {
+                $this->directives[$directive][] = $v;
+            }
         }
     }
 
@@ -86,19 +100,20 @@ class Policy
      * Add options to a directive.
      * @param string $directive The directive.
      * @param string|array|bool $value The value.
-     * @return Policy The Policy.
-     * @throws CspException if the directive is invalid.
+     * @return Policy A new Policy.
+     * @throws CspException if the directive is not valid.
      */
-    public function addDirective(string $directive, string|array|bool $value): Policy
+    public function addDirective(string $directive, string|array|bool $value = true): Policy
     {
-        if (!in_array($directive, static::VALID_DIRECTIVES)) {
-            throw CspException::forInvalidDirective($directive);
+        if ($value === false) {
+            return $this->removeDirective($directive);
         }
 
-        if ($value === false) {
-            unset($this->directives[$directive]);
-            return $this;
-        }
+        static::checkDirective($directive);
+
+        $temp = clone $this;
+
+        $temp->directives[$directive] ??= [];
 
         if ($value === true) {
             $value = [];
@@ -106,13 +121,27 @@ class Policy
             $value = [$value];
         }
 
-        $this->directives[$directive] ??= [];
+        foreach ($value AS $v) {
+            if (in_array($v, $temp->directives[$directive])) {
+                continue;
+            }
 
-        foreach ($value AS $val) {
-            $this->directives[$directive][$val] = true;
+            $temp->directives[$directive][] = $v;
         }
 
-        return $this;
+        return $temp;
+    }
+
+    /**
+     * Get the options for a directive.
+     * @param string $directive The directive.
+     * @return array|null The directive options.
+     */
+    public function getDirective(string $directive): array|null
+    {
+        static::checkDirective($directive);
+
+        return $this->directives[$directive] ?? null;
     }
 
     /**
@@ -124,11 +153,57 @@ class Policy
         $directives = [];
 
         foreach ($this->directives AS $directive => $values) {
-            $valueString = $directive.' '. static::formatSrc($values);
-            $directives[] = trim($valueString).';';
+            $valueString = $directive;
+
+            if ($values !== []) {
+                $valueString .= ' ';
+                $valueString .= static::formatSrc($values);
+            }
+
+            $directives[] = $valueString.';';
         }
 
         return implode(' ', $directives);
+    }
+
+    /**
+     * Determine if a directive exists.
+     * @param string $directive The directive.
+     * @return bool TRUE if the directive exists, otherwise FALSE.
+     */
+    public function hasDirective(string $directive): bool
+    {
+        static::checkDirective($directive);
+
+        return array_key_exists($directive, $this->directives);
+    }
+
+    /**
+     * Remove a directive.
+     * @param string $directive The directive.
+     * @return Policy A New Policy.
+     */
+    public function removeDirective(string $directive): static
+    {
+        static::checkDirective($directive);
+
+        $temp = clone $this;
+
+        unset($temp->directives[$directive]);
+
+        return $temp;
+    }
+
+    /**
+     * Check if a directive is valid.
+     * @param string $directive The directive.
+     * @throws CspException if the directive is not valid.
+     */
+    protected static function checkDirective(string $directive): void
+    {
+        if (!in_array($directive, static::VALID_DIRECTIVES)) {
+            throw CspException::forInvalidDirective($directive);
+        }
     }
 
     /**
@@ -146,7 +221,7 @@ class Policy
 
                 return $source;
             },
-            array_keys($sources)
+            $sources
         );
 
         return implode(' ', $sources);

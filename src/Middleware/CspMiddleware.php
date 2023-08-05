@@ -1,21 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Fyre\CSP\Middleware;
+namespace Fyre\Security\Middleware;
 
-use
-    Fyre\CSP\CspBuilder,
-    Fyre\Middleware\Middleware,
-    Fyre\Middleware\RequestHandler,
-    Fyre\Server\ClientResponse,
-    Fyre\Server\ServerRequest;
+use Fyre\Middleware\Middleware;
+use Fyre\Middleware\RequestHandler;
+use Fyre\Security\CspBuilder;
+use Fyre\Server\ClientResponse;
+use Fyre\Server\ServerRequest;
 
-use const
-    JSON_UNESCAPED_SLASHES;
-
-use function
-    array_replace_recursive,
-    json_encode;
+use function array_replace;
 
 /**
  * CspMiddleware
@@ -24,7 +18,7 @@ class CspMiddleware extends Middleware
 {
 
     protected static array $defaults = [
-        'policy' => [],
+        'default' => [],
         'report' => null,
         'reportTo' => []
     ];
@@ -37,17 +31,17 @@ class CspMiddleware extends Middleware
      */
     public function __construct(array $options = [])
     {
-        $options = array_replace_recursive(static::$defaults, $options);
+        $options = array_replace(static::$defaults, $options);
 
-        if ($options['policy'] !== null) {
-            CspBuilder::create('policy', $options['policy']);
+        if ($options['default'] !== null) {
+            CspBuilder::createPolicy(CspBuilder::DEFAULT, $options['default']);
         }
 
         if ($options['report'] !== null) {
-            CspBuilder::create('report', $options['report']);
+            CspBuilder::createPolicy(CspBuilder::REPORT, $options['report']);
         }
 
-        $this->reportTo = $options['reportTo'];
+        CspBuilder::setReportTo($options['reportTo']);
     }
 
     /**
@@ -60,13 +54,7 @@ class CspMiddleware extends Middleware
     {
         $response = $handler->handle($request);
 
-        CspBuilder::addHeaders($response);
-
-        if ($this->reportTo !== []) {
-            $response->setHeader('Report-To', json_encode($this->reportTo, JSON_UNESCAPED_SLASHES));
-        }
-
-        return $response;
+        return CspBuilder::addHeaders($response);
     }
 
 }

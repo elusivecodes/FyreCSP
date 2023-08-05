@@ -1,6 +1,6 @@
 # FyreCSP
 
-**FyreCSP** is a free, content security policy library for *PHP*.
+**FyreCSP** is a free, open-source content security policy library for *PHP*.
 
 
 ## Table Of Contents
@@ -22,7 +22,7 @@ composer require fyre/csp
 In PHP:
 
 ```php
-use Fyre\CSP\CspBuilder;
+use Fyre\Security\CspBuilder;
 ```
 
 
@@ -35,7 +35,7 @@ Add CSP headers to a [*ClientResponse*](https://github.com/elusivecodes/FyreServ
 - `$response` is a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).
 
 ```php
-CspBuilder::addHeaders($response);
+$newResponse = CspBuilder::addHeaders($response);
 ```
 
 **Clear**
@@ -46,25 +46,25 @@ Clear all policies.
 CspBuilder::clear();
 ```
 
-**Create**
+**Create Policy**
 
 Create a [*Policy*](#policies).
 
-- `$key` is a string representing the policy key, and should be one of either "*policy*" or "*report*".
+- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
 - `$directives` is an array containing the directives to add, and will default to *[]*.
 
 ```php
-CspBuilder::create($key, $directives);
+CspBuilder::createPolicy($key, $directives);
 ```
 
-**Get**
+**Get Policy**
 
 Get a [*Policy*](#policies).
 
-- `$key` is a string representing the policy key, and should be one of either "*policy*" or "*report*".
+- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
 
 ```php
-$policy = CspBuilder::get($key);
+$policy = CspBuilder::getPolicy($key);
 ```
 
 **Get Policies**
@@ -73,6 +73,45 @@ Get all policies.
 
 ```php
 $policies = CspBuilder::getPolicies();
+```
+
+**Get Report To**
+
+Get the Report-To values.
+
+```php
+$reportTo = CspBuilder::getReportTo();
+```
+
+**Has Policy**
+
+Check if a policy exists.
+
+- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
+
+```php
+$hasPolicy = CspBuilder::hasPolicy($key);
+```
+
+**Set Policy**
+
+Set a policy.
+
+- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
+- `$policy` is a [*Policy*](#policies).
+
+```php
+CspBuilder::setPolicy($key, $policy);
+```
+
+**Set Report To**
+
+Set the Report-To values.
+
+- `$reportTo` is an array containing the [Report-To](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/report-to) values.
+
+```php
+CspBuilder::setReportTo($reportTo);
 ```
 
 
@@ -86,7 +125,17 @@ Add options to a directive.
 - `$value` is a string, or an array of strings containing the values to add. For directives that don't require values, you can set this to *true* or *false* indicating whether to include the directive.
 
 ```php
-$policy->addDirective($directive, $value);
+$newPolicy = $policy->addDirective($directive, $value);
+```
+
+**Get Directive**
+
+Get the options for a directive.
+
+- `$directive` is a string representing the directive.
+
+```php
+$options = $policy->getDirective($directive);
 ```
 
 **Get Header**
@@ -97,15 +146,35 @@ Get the header string.
 $header = $policy->getHeader();
 ```
 
+**Has Directive**
+
+- `$directive` is a string representing the directive.
+
+Determine if a directive exists.
+
+```php
+$hasDirective = $policy->hasDirective($directive);
+```
+
+**Remove Directive**
+
+Remove a directive.
+
+- `$directive` is a string representing the directive.
+
+```php
+$newPolicy = $policy->removeDirective($directive);
+```
+
 
 ## Middleware
 
 ```php
-use Fyre\CSP\Middleware\CspMiddleware;
+use Fyre\Security\Middleware\CspMiddleware;
 ```
 
 - `$options` is an array containing options for the middleware.
-    - `policy` is an array containing the policy directives, and will default to *[]*.
+    - `default` is an array containing the policy directives, and will default to *[]*.
     - `report` is an array containing the report-only directives, and will default to *null*.
     - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
 
