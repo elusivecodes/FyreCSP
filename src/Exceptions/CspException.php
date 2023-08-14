@@ -11,7 +11,7 @@ use RuntimeException;
 class CspException extends RuntimeException
 {
 
-    public static function forInvalidDirective(string $directive)
+    public static function forInvalidDirective(string $directive): static
     {
         return new static('CSP invalid directive: '.$directive);
     }
