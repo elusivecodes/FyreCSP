@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 final class PolicyTest extends TestCase
 {
-
     public function testAddDirective(): void
     {
         $policy1 = new Policy();
@@ -31,7 +30,7 @@ final class PolicyTest extends TestCase
         $policy1 = new Policy();
         $policy2 = $policy1->addDirective('default-src', [
             'self',
-            'https://test.com/'
+            'https://test.com/',
         ]);
 
         $this->assertSame(
@@ -45,10 +44,37 @@ final class PolicyTest extends TestCase
         );
     }
 
+    public function testAddDirectiveFalse(): void
+    {
+        $policy1 = new Policy([
+            'upgrade-insecure-requests' => true,
+        ]);
+        $policy2 = $policy1->addDirective('upgrade-insecure-requests', false);
+
+        $this->assertSame(
+            'upgrade-insecure-requests;',
+            $policy1->getHeader()
+        );
+
+        $this->assertSame(
+            '',
+            $policy2->getHeader()
+        );
+    }
+
+    public function testAddDirectiveInvalid(): void
+    {
+        $this->expectException(CSPException::class);
+
+        $policy = new Policy();
+
+        $policy->addDirective('invalid', true);
+    }
+
     public function testAddDirectiveMerge(): void
     {
         $policy1 = new Policy([
-            'default-src' => 'self'
+            'default-src' => 'self',
         ]);
         $policy2 = $policy1->addDirective('default-src', 'https://test.com/');
 
@@ -79,28 +105,10 @@ final class PolicyTest extends TestCase
         );
     }
 
-    public function testAddDirectiveFalse(): void
-    {
-        $policy1 = new Policy([
-            'upgrade-insecure-requests' => true
-        ]);
-        $policy2 = $policy1->addDirective('upgrade-insecure-requests', false);
-
-        $this->assertSame(
-            'upgrade-insecure-requests;',
-            $policy1->getHeader()
-        );
-
-        $this->assertSame(
-            '',
-            $policy2->getHeader()
-        );
-    }
-
     public function testAddDirectiveUnique(): void
     {
         $policy1 = new Policy([
-            'default-src' => 'self'
+            'default-src' => 'self',
         ]);
         $policy2 = $policy1->addDirective('default-src', 'self');
 
@@ -115,28 +123,19 @@ final class PolicyTest extends TestCase
         );
     }
 
-    public function testAddDirectiveInvalid(): void
-    {
-        $this->expectException(CSPException::class);
-
-        $policy = new Policy();
-
-        $policy->addDirective('invalid', true);
-    }
-
     public function testGetDirective(): void
     {
         $policy = new Policy([
             'default-src' => [
                 'self',
-                'https://test.com/'
-            ]
+                'https://test.com/',
+            ],
         ]);
 
         $this->assertSame(
             [
                 'self',
-                'https://test.com/'
+                'https://test.com/',
             ],
             $policy->getDirective('default-src')
         );
@@ -154,7 +153,7 @@ final class PolicyTest extends TestCase
     public function testHasDirective(): void
     {
         $policy = new Policy([
-            'default-src' => 'self'
+            'default-src' => 'self',
         ]);
 
         $this->assertTrue(
@@ -183,7 +182,7 @@ final class PolicyTest extends TestCase
     public function testRemoveDirective(): void
     {
         $policy1 = new Policy([
-            'upgrade-insecure-requests' => true
+            'upgrade-insecure-requests' => true,
         ]);
         $policy2 = $policy1->removeDirective('upgrade-insecure-requests');
 
@@ -206,5 +205,4 @@ final class PolicyTest extends TestCase
 
         $policy->removeDirective('invalid');
     }
-
 }

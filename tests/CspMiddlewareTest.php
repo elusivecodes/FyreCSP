@@ -3,21 +3,20 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Fyre\Security\Middleware\CspMiddleware;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
+use Fyre\Security\Middleware\CspMiddleware;
 use Fyre\Server\ServerRequest;
 use PHPUnit\Framework\TestCase;
 
 final class CspMiddlewareTest extends TestCase
 {
-
     public function testPolicy(): void
     {
         $middleware = new CspMiddleware([
             'default' => [
-                'default-src' => 'self'
-            ]
+                'default-src' => 'self',
+            ],
         ]);
 
         $queue = new MiddlewareQueue();
@@ -43,17 +42,17 @@ final class CspMiddlewareTest extends TestCase
         $middleware = new CspMiddleware([
             'report' => [
                 'default-src' => 'self',
-                'report-to' => 'csp-endpoint'
+                'report-to' => 'csp-endpoint',
             ],
             'reportTo' => [
                 'group' => 'csp-endpoint',
                 'max_age' => '10886400',
                 'endpoints' => [
                     [
-                        'url' => 'https://test.com/csp-report'
-                    ]
-                ]
-            ]
+                        'url' => 'https://test.com/csp-report',
+                    ],
+                ],
+            ],
         ]);
 
         $queue = new MiddlewareQueue();
@@ -74,5 +73,4 @@ final class CspMiddlewareTest extends TestCase
             $response->getHeaderValue('Report-To')
         );
     }
-
 }

@@ -17,7 +17,6 @@ use function preg_match;
  */
 class Policy
 {
-
     protected const VALID_DIRECTIVES = [
         'base-uri',
         'block-all-mixed-content',
@@ -45,7 +44,7 @@ class Policy
         'style-src-elem',
         'upgrade-insecure-requests',
         'webrtc-src',
-        'worker-src'
+        'worker-src',
     ];
 
     protected const VALID_SOURCES = [
@@ -55,18 +54,19 @@ class Policy
         'strict-dynamic',
         'unsafe-eval',
         'unsafe-hashes',
-        'unsafe-inline'
+        'unsafe-inline',
     ];
 
     protected array $directives = [];
 
     /**
      * New ContentSecurityPolicy constructor.
+     *
      * @param array $directives The policy directives.
      */
     public function __construct(array $directives = [])
     {
-        foreach ($directives AS $directive => $values) {
+        foreach ($directives as $directive => $values) {
             static::checkDirective($directive);
 
             if ($values === false) {
@@ -81,7 +81,7 @@ class Policy
                 $values = [$values];
             }
 
-            foreach ($values AS $v) {
+            foreach ($values as $v) {
                 $this->directives[$directive][] = $v;
             }
         }
@@ -89,6 +89,7 @@ class Policy
 
     /**
      * Get the header string.
+     *
      * @return string The header string.
      */
     public function __toString(): string
@@ -98,12 +99,14 @@ class Policy
 
     /**
      * Add options to a directive.
+     *
      * @param string $directive The directive.
      * @param string|array|bool $value The value.
      * @return Policy A new Policy.
+     *
      * @throws CspException if the directive is not valid.
      */
-    public function addDirective(string $directive, string|array|bool $value = true): Policy
+    public function addDirective(string $directive, array|bool|string $value = true): Policy
     {
         if ($value === false) {
             return $this->removeDirective($directive);
@@ -121,7 +124,7 @@ class Policy
             $value = [$value];
         }
 
-        foreach ($value AS $v) {
+        foreach ($value as $v) {
             if (in_array($v, $temp->directives[$directive])) {
                 continue;
             }
@@ -134,6 +137,7 @@ class Policy
 
     /**
      * Get the options for a directive.
+     *
      * @param string $directive The directive.
      * @return array|null The directive options.
      */
@@ -146,13 +150,14 @@ class Policy
 
     /**
      * Get the header string.
+     *
      * @return string The header string.
      */
     public function getHeader(): string
     {
         $directives = [];
 
-        foreach ($this->directives AS $directive => $values) {
+        foreach ($this->directives as $directive => $values) {
             $valueString = $directive;
 
             if ($values !== []) {
@@ -168,6 +173,7 @@ class Policy
 
     /**
      * Determine if a directive exists.
+     *
      * @param string $directive The directive.
      * @return bool TRUE if the directive exists, otherwise FALSE.
      */
@@ -180,6 +186,7 @@ class Policy
 
     /**
      * Remove a directive.
+     *
      * @param string $directive The directive.
      * @return Policy A New Policy.
      */
@@ -196,7 +203,9 @@ class Policy
 
     /**
      * Check if a directive is valid.
+     *
      * @param string $directive The directive.
+     *
      * @throws CspException if the directive is not valid.
      */
     protected static function checkDirective(string $directive): void
@@ -208,6 +217,7 @@ class Policy
 
     /**
      * Format source values from an array.
+     *
      * @param array $sources The sources.
      * @return string The formatted string.
      */
@@ -226,5 +236,4 @@ class Policy
 
         return implode(' ', $sources);
     }
-
 }

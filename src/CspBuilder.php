@@ -6,24 +6,23 @@ namespace Fyre\Security;
 use Fyre\Security\Exceptions\CspException;
 use Fyre\Server\ClientResponse;
 
-use const JSON_UNESCAPED_SLASHES;
-
 use function array_key_exists;
 use function json_encode;
+
+use const JSON_UNESCAPED_SLASHES;
 
 /**
  * CspBuilder
  */
 abstract class CspBuilder
 {
-
     public const DEFAULT = 'default';
 
     public const REPORT = 'report';
 
     protected const POLICY_HEADERS = [
         'default' => 'Content-Security-Policy',
-        'report' => 'Content-Security-Policy-Report-Only'
+        'report' => 'Content-Security-Policy-Report-Only',
     ];
 
     protected static array $policies = [];
@@ -32,12 +31,13 @@ abstract class CspBuilder
 
     /**
      * Add CSP headers to a ClientResponse.
+     *
      * @param ClientResponse $response The ClientResponse.
      * @return ClientResponse The new ClientResponse.
      */
     public static function addHeaders(ClientResponse $response): ClientResponse
     {
-        foreach (static::$policies AS $key => $policy) {
+        foreach (static::$policies as $key => $policy) {
             if (!array_key_exists($key, static::POLICY_HEADERS)) {
                 continue;
             }
@@ -62,9 +62,11 @@ abstract class CspBuilder
 
     /**
      * Create a policy.
+     *
      * @param string $key The policy key.
      * @param array $directives The policy directives.
      * @return Policy The Policy.
+     *
      * @throws CspException if the policy is not valid.
      */
     public static function createPolicy(string $key, array $directives = []): Policy
@@ -73,7 +75,18 @@ abstract class CspBuilder
     }
 
     /**
+     * Get all policies.
+     *
+     * @return array The policies.
+     */
+    public static function getPolicies(): array
+    {
+        return static::$policies;
+    }
+
+    /**
      * Get a policy.
+     *
      * @param string $key The policy key.
      * @return Policy|null The Policy.
      */
@@ -84,6 +97,7 @@ abstract class CspBuilder
 
     /**
      * Get the Report-To values.
+     *
      * @return array The Report-To values.
      */
     public static function getReportTo(): array
@@ -92,16 +106,8 @@ abstract class CspBuilder
     }
 
     /**
-     * Get all policies.
-     * @return array The policies.
-     */
-    public static function getPolicies(): array
-    {
-        return static::$policies;
-    }
-
-    /**
      * Determine if a policy exists.
+     *
      * @param string $key The policy key.
      * @return bool TRUE if the policy exists, otherwise FALSE.
      */
@@ -112,6 +118,7 @@ abstract class CspBuilder
 
     /**
      * Set a policy.
+     *
      * @param string $key The policy key.
      * @param Policy $policy The Policy.
      */
@@ -122,11 +129,11 @@ abstract class CspBuilder
 
     /**
      * Set the Report-To values.
+     *
      * @param array $reportTo The Report-To values.
      */
     public static function setReportTo(array $reportTo): void
     {
         static::$reportTo = $reportTo;
     }
-
 }

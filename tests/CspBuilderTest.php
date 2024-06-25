@@ -9,12 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 final class CspBuilderTest extends TestCase
 {
-
     public function testCreatePolicy(): void
     {
         $policy = CspBuilder::createPolicy('default', [
             'default-src' => 'self',
-            'child-src' => 'none'
+            'child-src' => 'none',
         ]);
 
         $policy = CspBuilder::getPolicy('default');
@@ -27,18 +26,6 @@ final class CspBuilderTest extends TestCase
         $this->assertSame(
             'default-src \'self\'; child-src \'none\';',
             $policy->getHeader()
-        );
-    }
-
-    public function testGetPolicy(): void
-    {
-        CspBuilder::createPolicy('default', []);
-
-        $policy = CspBuilder::getPolicy('default');
-
-        $this->assertInstanceOf(
-            Policy::class,
-            $policy
         );
     }
 
@@ -64,6 +51,18 @@ final class CspBuilderTest extends TestCase
         $this->assertInstanceOf(
             Policy::class,
             $policies['report']
+        );
+    }
+
+    public function testGetPolicy(): void
+    {
+        CspBuilder::createPolicy('default', []);
+
+        $policy = CspBuilder::getPolicy('default');
+
+        $this->assertInstanceOf(
+            Policy::class,
+            $policy
         );
     }
 
@@ -102,9 +101,9 @@ final class CspBuilderTest extends TestCase
             'max_age' => '10886400',
             'endpoints' => [
                 [
-                    'url' => 'https://test.com/csp-report'
-                ]
-            ]
+                    'url' => 'https://test.com/csp-report',
+                ],
+            ],
         ]);
 
         $this->assertSame(
@@ -113,9 +112,9 @@ final class CspBuilderTest extends TestCase
                 'max_age' => '10886400',
                 'endpoints' => [
                     [
-                        'url' => 'https://test.com/csp-report'
-                    ]
-                ]
+                        'url' => 'https://test.com/csp-report',
+                    ],
+                ],
             ],
             CspBuilder::getReportTo()
         );

@@ -16,17 +16,17 @@ use function array_replace;
  */
 class CspMiddleware extends Middleware
 {
-
     protected static array $defaults = [
         'default' => [],
         'report' => null,
-        'reportTo' => []
+        'reportTo' => [],
     ];
 
     protected array $reportTo = [];
 
     /**
      * New CspMiddleware constructor.
+     *
      * @param array $options Options for the middleware.
      */
     public function __construct(array $options = [])
@@ -46,6 +46,7 @@ class CspMiddleware extends Middleware
 
     /**
      * Process a ServerRequest.
+     *
      * @param ServerRequest $request The ServerRequest.
      * @param RequestHandler $handler The RequestHandler.
      * @return ClientResponse The ClientResponse.
@@ -56,5 +57,4 @@ class CspMiddleware extends Middleware
 
         return CspBuilder::addHeaders($response);
     }
-
 }
