@@ -101,7 +101,7 @@ class Policy
      * Add options to a directive.
      *
      * @param string $directive The directive.
-     * @param string|array|bool $value The value.
+     * @param array|bool|string $value The value.
      * @return Policy A new Policy.
      *
      * @throws CspException if the directive is not valid.
