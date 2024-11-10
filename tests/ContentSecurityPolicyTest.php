@@ -3,22 +3,22 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Fyre\Security\CspBuilder;
+use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Security\Policy;
 use PHPUnit\Framework\TestCase;
 
-final class CspBuilderTest extends TestCase
+final class ContentSecurityPolicyTest extends TestCase
 {
-    protected CspBuilder $cspBuilder;
+    protected ContentSecurityPolicy $csp;
 
     public function testCreatePolicy(): void
     {
-        $policy = $this->cspBuilder->createPolicy('default', [
+        $policy = $this->csp->createPolicy('default', [
             'default-src' => 'self',
             'child-src' => 'none',
         ]);
 
-        $policy = $this->cspBuilder->getPolicy('default');
+        $policy = $this->csp->getPolicy('default');
 
         $this->assertInstanceOf(
             Policy::class,
@@ -34,16 +34,16 @@ final class CspBuilderTest extends TestCase
     public function testGetInvalid(): void
     {
         $this->assertNull(
-            $this->cspBuilder->getPolicy('invalid')
+            $this->csp->getPolicy('invalid')
         );
     }
 
     public function testGetPolicies(): void
     {
-        $this->cspBuilder->createPolicy('default', []);
-        $this->cspBuilder->createPolicy('report', []);
+        $this->csp->createPolicy('default', []);
+        $this->csp->createPolicy('report', []);
 
-        $policies = $this->cspBuilder->getPolicies();
+        $policies = $this->csp->getPolicies();
 
         $this->assertInstanceOf(
             Policy::class,
@@ -58,9 +58,9 @@ final class CspBuilderTest extends TestCase
 
     public function testGetPolicy(): void
     {
-        $this->cspBuilder->createPolicy('default', []);
+        $this->csp->createPolicy('default', []);
 
-        $policy = $this->cspBuilder->getPolicy('default');
+        $policy = $this->csp->getPolicy('default');
 
         $this->assertInstanceOf(
             Policy::class,
@@ -70,17 +70,17 @@ final class CspBuilderTest extends TestCase
 
     public function testHasPolicy(): void
     {
-        $this->cspBuilder->createPolicy('default', []);
+        $this->csp->createPolicy('default', []);
 
         $this->assertTrue(
-            $this->cspBuilder->hasPolicy('default')
+            $this->csp->hasPolicy('default')
         );
     }
 
     public function testHasPolicyInvalid(): void
     {
         $this->assertFalse(
-            $this->cspBuilder->hasPolicy('invalid')
+            $this->csp->hasPolicy('invalid')
         );
     }
 
@@ -89,21 +89,21 @@ final class CspBuilderTest extends TestCase
         $policy = new Policy();
 
         $this->assertSame(
-            $this->cspBuilder,
-            $this->cspBuilder->setPolicy('test', $policy)
+            $this->csp,
+            $this->csp->setPolicy('test', $policy)
         );
 
         $this->assertSame(
             $policy,
-            $this->cspBuilder->getPolicy('test')
+            $this->csp->getPolicy('test')
         );
     }
 
     public function testSetReportTo(): void
     {
         $this->assertSame(
-            $this->cspBuilder,
-            $this->cspBuilder->setReportTo([
+            $this->csp,
+            $this->csp->setReportTo([
                 'group' => 'csp-endpoint',
                 'max_age' => '10886400',
                 'endpoints' => [
@@ -124,12 +124,12 @@ final class CspBuilderTest extends TestCase
                     ],
                 ],
             ],
-            $this->cspBuilder->getReportTo()
+            $this->csp->getReportTo()
         );
     }
 
     protected function setUp(): void
     {
-        $this->cspBuilder = new CspBuilder();
+        $this->csp = new ContentSecurityPolicy();
     }
 }

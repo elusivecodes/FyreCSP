@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c33758cfd90c313b2fda2564011c6dd9",
+    "content-hash": "cd12601b5747e4965176cfed97f6de4b",
     "packages": [
         {
             "name": "fyre/container",
@@ -224,16 +224,16 @@
         },
         {
             "name": "fyre/middleware",
-            "version": "v3.0",
+            "version": "v4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreMiddleware.git",
-                "reference": "c538d5788c6b83278439f682f812c34603080bef"
+                "reference": "8b700bc0203a307840f42085a4510f30cd5bbad5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreMiddleware/zipball/c538d5788c6b83278439f682f812c34603080bef",
-                "reference": "c538d5788c6b83278439f682f812c34603080bef",
+                "url": "https://api.github.com/repos/elusivecodes/FyreMiddleware/zipball/8b700bc0203a307840f42085a4510f30cd5bbad5",
+                "reference": "8b700bc0203a307840f42085a4510f30cd5bbad5",
                 "shasum": ""
             },
             "require": {
@@ -264,9 +264,9 @@
             "description": "A middleware library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreMiddleware/issues",
-                "source": "https://github.com/elusivecodes/FyreMiddleware/tree/v3.0"
+                "source": "https://github.com/elusivecodes/FyreMiddleware/tree/v4.0"
             },
-            "time": "2024-11-10T01:14:06+00:00"
+            "time": "2024-11-10T12:28:46+00:00"
         },
         {
             "name": "fyre/negotiate",

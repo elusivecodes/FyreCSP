@@ -12,9 +12,9 @@ use function json_encode;
 use const JSON_UNESCAPED_SLASHES;
 
 /**
- * CspBuilder
+ * ContentSecurityPolicy
  */
-class CspBuilder
+class ContentSecurityPolicy
 {
     public const DEFAULT = 'default';
 
@@ -30,19 +30,44 @@ class CspBuilder
     protected array $reportTo = [];
 
     /**
-     * Add CSP headers to a ClientResponse.
+     * New ContentSecurityPolicy constructor.
+     *
+     * @param array $options The ContentSecurityPolicy options.
+     */
+    public function __construct(array $options = [])
+    {
+        foreach ($options as $key => $value) {
+            switch ($key) {
+                case 'reportTo':
+                    $this->setReportTo($value);
+                    break;
+                default:
+                    $this->createPolicy($key, $value);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Add ContentSecurityPolicy headers to a ClientResponse.
      *
      * @param ClientResponse $response The ClientResponse.
      * @return ClientResponse The new ClientResponse.
      */
     public function addHeaders(ClientResponse $response): ClientResponse
     {
-        foreach ($this->policies as $key => $policy) {
-            if (!array_key_exists($key, static::POLICY_HEADERS)) {
+        foreach (static::POLICY_HEADERS as $key => $header) {
+            if (!array_key_exists($key, $this->policies)) {
                 continue;
             }
 
-            $response = $response->setHeader(static::POLICY_HEADERS[$key], $policy->getHeader());
+            $value = $this->policies[$key]->getHeader();
+
+            if (!$value) {
+                continue;
+            }
+
+            $response = $response->setHeader($header, $value);
         }
 
         if ($this->reportTo !== []) {
@@ -121,7 +146,7 @@ class CspBuilder
      *
      * @param string $key The policy key.
      * @param Policy $policy The Policy.
-     * @return CspBuilder The CspBuilder.
+     * @return ContentSecurityPolicy The ContentSecurityPolicy.
      */
     public function setPolicy(string $key, Policy $policy): static
     {
@@ -134,7 +159,7 @@ class CspBuilder
      * Set the Report-To values.
      *
      * @param array $reportTo The Report-To values.
-     * @return CspBuilder The CspBuilder.
+     * @return ContentSecurityPolicy The ContentSecurityPolicy.
      */
     public function setReportTo(array $reportTo): static
     {

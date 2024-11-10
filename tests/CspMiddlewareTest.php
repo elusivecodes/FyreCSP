@@ -6,6 +6,7 @@ namespace Tests;
 use Fyre\Container\Container;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
+use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Security\Middleware\CspMiddleware;
 use Fyre\Server\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -16,11 +17,12 @@ final class CspMiddlewareTest extends TestCase
 
     public function testPolicy(): void
     {
-        $middleware = new CspMiddleware($this->container, [
+        $csp = new ContentSecurityPolicy([
             'default' => [
                 'default-src' => 'self',
             ],
         ]);
+        $middleware = new CspMiddleware($csp);
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
@@ -42,7 +44,7 @@ final class CspMiddlewareTest extends TestCase
 
     public function testReportPolicy(): void
     {
-        $middleware = new CspMiddleware($this->container, [
+        $csp = new ContentSecurityPolicy([
             'report' => [
                 'default-src' => 'self',
                 'report-to' => 'csp-endpoint',
@@ -57,6 +59,7 @@ final class CspMiddlewareTest extends TestCase
                 ],
             ],
         ]);
+        $middleware = new CspMiddleware($csp);
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);

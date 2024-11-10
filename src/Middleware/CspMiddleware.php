@@ -3,64 +3,39 @@ declare(strict_types=1);
 
 namespace Fyre\Security\Middleware;
 
-use Fyre\Container\Container;
+use Closure;
 use Fyre\Middleware\Middleware;
-use Fyre\Middleware\RequestHandler;
-use Fyre\Security\CspBuilder;
+use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Server\ClientResponse;
 use Fyre\Server\ServerRequest;
-
-use function array_replace;
 
 /**
  * CspMiddleware
  */
 class CspMiddleware extends Middleware
 {
-    protected static array $defaults = [
-        'default' => [],
-        'report' => null,
-        'reportTo' => [],
-    ];
-
-    protected CspBuilder $cspBuilder;
-
-    protected array $reportTo = [];
+    protected ContentSecurityPolicy $csp;
 
     /**
      * New CspMiddleware constructor.
      *
-     * @param Container $container The Container.
+     * @param ContentSecurityPolicy $csp The ContentSecurityPolicy.
      * @param array $options Options for the middleware.
      */
-    public function __construct(Container $container, array $options = [])
+    public function __construct(ContentSecurityPolicy $csp)
     {
-        $this->cspBuilder = $container->build(CspBuilder::class);
-
-        $options = array_replace(static::$defaults, $options);
-
-        if ($options['default'] !== null) {
-            $this->cspBuilder->createPolicy(CspBuilder::DEFAULT, $options['default']);
-        }
-
-        if ($options['report'] !== null) {
-            $this->cspBuilder->createPolicy(CspBuilder::REPORT, $options['report']);
-        }
-
-        $this->cspBuilder->setReportTo($options['reportTo']);
+        $this->csp = $csp;
     }
 
     /**
      * Process a ServerRequest.
      *
      * @param ServerRequest $request The ServerRequest.
-     * @param RequestHandler $handler The RequestHandler.
+     * @param Closure $next The next handler.
      * @return ClientResponse The ClientResponse.
      */
-    public function process(ServerRequest $request, RequestHandler $handler): ClientResponse
+    public function __invoke(ServerRequest $request, Closure $next): ClientResponse
     {
-        $response = $handler->handle($request);
-
-        return $this->cspBuilder->addHeaders($response);
+        return $this->csp->addHeaders($next($request));
     }
 }

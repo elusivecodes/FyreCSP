@@ -23,14 +23,27 @@ composer require fyre/csp
 In PHP:
 
 ```php
-use Fyre\Security\CspBuilder;
+use Fyre\Security\ContentSecurityPolicy;
 ```
 
 
 ## Basic Usage
 
+- `$options` is an array containing options for the middleware.
+    - `default` is an array containing the policy directives, and will default to *[]*.
+    - `report` is an array containing the report-only directives, and will default to *null*.
+    - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
+
 ```php
-$cspBuilder = new CspBuilder();
+$csp = new ContentSecurityPolicy($options);
+```
+
+**Autoloading**
+
+It is recommended to bind the *ContentSecurityPolicy* to the [*Container*](https://github.com/elusivecodes/FyreContainer) as a singleton.
+
+```php
+$container->singleton(ContentSecurityPolicy::class);
 ```
 
 
@@ -43,7 +56,7 @@ Add CSP headers to a [*ClientResponse*](https://github.com/elusivecodes/FyreServ
 - `$response` is a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).
 
 ```php
-$newResponse = $cspBuilder->addHeaders($response);
+$newResponse = $csp->addHeaders($response);
 ```
 
 **Clear**
@@ -51,28 +64,28 @@ $newResponse = $cspBuilder->addHeaders($response);
 Clear all policies.
 
 ```php
-$cspBuilder->clear();
+$csp->clear();
 ```
 
 **Create Policy**
 
 Create a [*Policy*](#policies).
 
-- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
+- `$key` is a string representing the policy key, and should be one of either `ContentSecurityPolicy::DEFAULT` or `ContentSecurityPolicy::REPORT`.
 - `$directives` is an array containing the directives to add, and will default to *[]*.
 
 ```php
-$cspBuilder->createPolicy($key, $directives);
+$csp->createPolicy($key, $directives);
 ```
 
 **Get Policy**
 
 Get a [*Policy*](#policies).
 
-- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
+- `$key` is a string representing the policy key, and should be one of either `ContentSecurityPolicy::DEFAULT` or `ContentSecurityPolicy::REPORT`.
 
 ```php
-$policy = $cspBuilder->getPolicy($key);
+$policy = $csp->getPolicy($key);
 ```
 
 **Get Policies**
@@ -80,7 +93,7 @@ $policy = $cspBuilder->getPolicy($key);
 Get all policies.
 
 ```php
-$policies = $cspBuilder->getPolicies();
+$policies = $csp->getPolicies();
 ```
 
 **Get Report To**
@@ -88,28 +101,28 @@ $policies = $cspBuilder->getPolicies();
 Get the Report-To values.
 
 ```php
-$reportTo = $cspBuilder->getReportTo();
+$reportTo = $csp->getReportTo();
 ```
 
 **Has Policy**
 
 Determine whether a policy exists.
 
-- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
+- `$key` is a string representing the policy key, and should be one of either `ContentSecurityPolicy::DEFAULT` or `ContentSecurityPolicy::REPORT`.
 
 ```php
-$hasPolicy = $cspBuilder->hasPolicy($key);
+$hasPolicy = $csp->hasPolicy($key);
 ```
 
 **Set Policy**
 
 Set a policy.
 
-- `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
+- `$key` is a string representing the policy key, and should be one of either `ContentSecurityPolicy::DEFAULT` or `ContentSecurityPolicy::REPORT`.
 - `$policy` is a [*Policy*](#policies).
 
 ```php
-$cspBuilder->setPolicy($key, $policy);
+$csp->setPolicy($key, $policy);
 ```
 
 **Set Report To**
@@ -119,7 +132,7 @@ Set the Report-To values.
 - `$reportTo` is an array containing the [Report-To](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/report-to) values.
 
 ```php
-$cspBuilder->setReportTo($reportTo);
+$csp->setReportTo($reportTo);
 ```
 
 
@@ -181,14 +194,10 @@ $newPolicy = $policy->removeDirective($directive);
 use Fyre\Security\Middleware\CspMiddleware;
 ```
 
-- `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
-- `$options` is an array containing options for the middleware.
-    - `default` is an array containing the policy directives, and will default to *[]*.
-    - `report` is an array containing the report-only directives, and will default to *null*.
-    - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
+- `$csp` is a *ContentSecurityPolicy*.
 
 ```php
-$middleware = new CspMiddleware($container, $options);
+$middleware = new CspMiddleware($csp);
 ```
 
 **Process**
