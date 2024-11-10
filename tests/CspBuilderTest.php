@@ -9,14 +9,16 @@ use PHPUnit\Framework\TestCase;
 
 final class CspBuilderTest extends TestCase
 {
+    protected CspBuilder $cspBuilder;
+
     public function testCreatePolicy(): void
     {
-        $policy = CspBuilder::createPolicy('default', [
+        $policy = $this->cspBuilder->createPolicy('default', [
             'default-src' => 'self',
             'child-src' => 'none',
         ]);
 
-        $policy = CspBuilder::getPolicy('default');
+        $policy = $this->cspBuilder->getPolicy('default');
 
         $this->assertInstanceOf(
             Policy::class,
@@ -32,16 +34,16 @@ final class CspBuilderTest extends TestCase
     public function testGetInvalid(): void
     {
         $this->assertNull(
-            CspBuilder::getPolicy('invalid')
+            $this->cspBuilder->getPolicy('invalid')
         );
     }
 
     public function testGetPolicies(): void
     {
-        CspBuilder::createPolicy('default', []);
-        CspBuilder::createPolicy('report', []);
+        $this->cspBuilder->createPolicy('default', []);
+        $this->cspBuilder->createPolicy('report', []);
 
-        $policies = CspBuilder::getPolicies();
+        $policies = $this->cspBuilder->getPolicies();
 
         $this->assertInstanceOf(
             Policy::class,
@@ -56,9 +58,9 @@ final class CspBuilderTest extends TestCase
 
     public function testGetPolicy(): void
     {
-        CspBuilder::createPolicy('default', []);
+        $this->cspBuilder->createPolicy('default', []);
 
-        $policy = CspBuilder::getPolicy('default');
+        $policy = $this->cspBuilder->getPolicy('default');
 
         $this->assertInstanceOf(
             Policy::class,
@@ -68,17 +70,17 @@ final class CspBuilderTest extends TestCase
 
     public function testHasPolicy(): void
     {
-        CspBuilder::createPolicy('default', []);
+        $this->cspBuilder->createPolicy('default', []);
 
         $this->assertTrue(
-            CspBuilder::hasPolicy('default')
+            $this->cspBuilder->hasPolicy('default')
         );
     }
 
     public function testHasPolicyInvalid(): void
     {
         $this->assertFalse(
-            CspBuilder::hasPolicy('invalid')
+            $this->cspBuilder->hasPolicy('invalid')
         );
     }
 
@@ -86,25 +88,31 @@ final class CspBuilderTest extends TestCase
     {
         $policy = new Policy();
 
-        CspBuilder::setPolicy('test', $policy);
+        $this->assertSame(
+            $this->cspBuilder,
+            $this->cspBuilder->setPolicy('test', $policy)
+        );
 
         $this->assertSame(
             $policy,
-            CspBuilder::getPolicy('test')
+            $this->cspBuilder->getPolicy('test')
         );
     }
 
     public function testSetReportTo(): void
     {
-        CspBuilder::setReportTo([
-            'group' => 'csp-endpoint',
-            'max_age' => '10886400',
-            'endpoints' => [
-                [
-                    'url' => 'https://test.com/csp-report',
+        $this->assertSame(
+            $this->cspBuilder,
+            $this->cspBuilder->setReportTo([
+                'group' => 'csp-endpoint',
+                'max_age' => '10886400',
+                'endpoints' => [
+                    [
+                        'url' => 'https://test.com/csp-report',
+                    ],
                 ],
-            ],
-        ]);
+            ])
+        );
 
         $this->assertSame(
             [
@@ -116,12 +124,12 @@ final class CspBuilderTest extends TestCase
                     ],
                 ],
             ],
-            CspBuilder::getReportTo()
+            $this->cspBuilder->getReportTo()
         );
     }
 
     protected function setUp(): void
     {
-        CspBuilder::clear();
+        $this->cspBuilder = new CspBuilder();
     }
 }

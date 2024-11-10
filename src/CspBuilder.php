@@ -14,7 +14,7 @@ use const JSON_UNESCAPED_SLASHES;
 /**
  * CspBuilder
  */
-abstract class CspBuilder
+class CspBuilder
 {
     public const DEFAULT = 'default';
 
@@ -25,9 +25,9 @@ abstract class CspBuilder
         'report' => 'Content-Security-Policy-Report-Only',
     ];
 
-    protected static array $policies = [];
+    protected array $policies = [];
 
-    protected static array $reportTo = [];
+    protected array $reportTo = [];
 
     /**
      * Add CSP headers to a ClientResponse.
@@ -35,9 +35,9 @@ abstract class CspBuilder
      * @param ClientResponse $response The ClientResponse.
      * @return ClientResponse The new ClientResponse.
      */
-    public static function addHeaders(ClientResponse $response): ClientResponse
+    public function addHeaders(ClientResponse $response): ClientResponse
     {
-        foreach (static::$policies as $key => $policy) {
+        foreach ($this->policies as $key => $policy) {
             if (!array_key_exists($key, static::POLICY_HEADERS)) {
                 continue;
             }
@@ -45,8 +45,8 @@ abstract class CspBuilder
             $response = $response->setHeader(static::POLICY_HEADERS[$key], $policy->getHeader());
         }
 
-        if (static::$reportTo !== []) {
-            $response = $response->setHeader('Report-To', json_encode(static::$reportTo, JSON_UNESCAPED_SLASHES));
+        if ($this->reportTo !== []) {
+            $response = $response->setHeader('Report-To', json_encode($this->reportTo, JSON_UNESCAPED_SLASHES));
         }
 
         return $response;
@@ -55,9 +55,9 @@ abstract class CspBuilder
     /**
      * Clear all policies.
      */
-    public static function clear(): void
+    public function clear(): void
     {
-        static::$policies = [];
+        $this->policies = [];
     }
 
     /**
@@ -69,9 +69,9 @@ abstract class CspBuilder
      *
      * @throws CspException if the policy is not valid.
      */
-    public static function createPolicy(string $key, array $directives = []): Policy
+    public function createPolicy(string $key, array $directives = []): Policy
     {
-        return static::$policies[$key] = new Policy($directives);
+        return $this->policies[$key] = new Policy($directives);
     }
 
     /**
@@ -79,9 +79,9 @@ abstract class CspBuilder
      *
      * @return array The policies.
      */
-    public static function getPolicies(): array
+    public function getPolicies(): array
     {
-        return static::$policies;
+        return $this->policies;
     }
 
     /**
@@ -90,9 +90,9 @@ abstract class CspBuilder
      * @param string $key The policy key.
      * @return Policy|null The Policy.
      */
-    public static function getPolicy(string $key): Policy|null
+    public function getPolicy(string $key): Policy|null
     {
-        return static::$policies[$key] ?? null;
+        return $this->policies[$key] ?? null;
     }
 
     /**
@@ -100,9 +100,9 @@ abstract class CspBuilder
      *
      * @return array The Report-To values.
      */
-    public static function getReportTo(): array
+    public function getReportTo(): array
     {
-        return static::$reportTo;
+        return $this->reportTo;
     }
 
     /**
@@ -111,9 +111,9 @@ abstract class CspBuilder
      * @param string $key The policy key.
      * @return bool TRUE if the policy exists, otherwise FALSE.
      */
-    public static function hasPolicy(string $key): bool
+    public function hasPolicy(string $key): bool
     {
-        return array_key_exists($key, static::$policies);
+        return array_key_exists($key, $this->policies);
     }
 
     /**
@@ -121,19 +121,25 @@ abstract class CspBuilder
      *
      * @param string $key The policy key.
      * @param Policy $policy The Policy.
+     * @return CspBuilder The CspBuilder.
      */
-    public static function setPolicy(string $key, Policy $policy): void
+    public function setPolicy(string $key, Policy $policy): static
     {
-        static::$policies[$key] = $policy;
+        $this->policies[$key] = $policy;
+
+        return $this;
     }
 
     /**
      * Set the Report-To values.
      *
      * @param array $reportTo The Report-To values.
+     * @return CspBuilder The CspBuilder.
      */
-    public static function setReportTo(array $reportTo): void
+    public function setReportTo(array $reportTo): static
     {
-        static::$reportTo = $reportTo;
+        $this->reportTo = $reportTo;
+
+        return $this;
     }
 }

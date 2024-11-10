@@ -5,6 +5,7 @@
 
 ## Table Of Contents
 - [Installation](#installation)
+- [Basic Usage](#basic-usage)
 - [Methods](#methods)
 - [Policies](#policies)
 - [Middleware](#middleware)
@@ -26,6 +27,13 @@ use Fyre\Security\CspBuilder;
 ```
 
 
+## Basic Usage
+
+```php
+$cspBuilder = new CspBuilder();
+```
+
+
 ## Methods
 
 **Add Headers**
@@ -35,7 +43,7 @@ Add CSP headers to a [*ClientResponse*](https://github.com/elusivecodes/FyreServ
 - `$response` is a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).
 
 ```php
-$newResponse = CspBuilder::addHeaders($response);
+$newResponse = $cspBuilder->addHeaders($response);
 ```
 
 **Clear**
@@ -43,7 +51,7 @@ $newResponse = CspBuilder::addHeaders($response);
 Clear all policies.
 
 ```php
-CspBuilder::clear();
+$cspBuilder->clear();
 ```
 
 **Create Policy**
@@ -54,7 +62,7 @@ Create a [*Policy*](#policies).
 - `$directives` is an array containing the directives to add, and will default to *[]*.
 
 ```php
-CspBuilder::createPolicy($key, $directives);
+$cspBuilder->createPolicy($key, $directives);
 ```
 
 **Get Policy**
@@ -64,7 +72,7 @@ Get a [*Policy*](#policies).
 - `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
 
 ```php
-$policy = CspBuilder::getPolicy($key);
+$policy = $cspBuilder->getPolicy($key);
 ```
 
 **Get Policies**
@@ -72,7 +80,7 @@ $policy = CspBuilder::getPolicy($key);
 Get all policies.
 
 ```php
-$policies = CspBuilder::getPolicies();
+$policies = $cspBuilder->getPolicies();
 ```
 
 **Get Report To**
@@ -80,7 +88,7 @@ $policies = CspBuilder::getPolicies();
 Get the Report-To values.
 
 ```php
-$reportTo = CspBuilder::getReportTo();
+$reportTo = $cspBuilder->getReportTo();
 ```
 
 **Has Policy**
@@ -90,7 +98,7 @@ Check if a policy exists.
 - `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
 
 ```php
-$hasPolicy = CspBuilder::hasPolicy($key);
+$hasPolicy = $cspBuilder->hasPolicy($key);
 ```
 
 **Set Policy**
@@ -101,7 +109,7 @@ Set a policy.
 - `$policy` is a [*Policy*](#policies).
 
 ```php
-CspBuilder::setPolicy($key, $policy);
+$cspBuilder->setPolicy($key, $policy);
 ```
 
 **Set Report To**
@@ -111,7 +119,7 @@ Set the Report-To values.
 - `$reportTo` is an array containing the [Report-To](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/report-to) values.
 
 ```php
-CspBuilder::setReportTo($reportTo);
+$cspBuilder->setReportTo($reportTo);
 ```
 
 
@@ -173,13 +181,14 @@ $newPolicy = $policy->removeDirective($directive);
 use Fyre\Security\Middleware\CspMiddleware;
 ```
 
+- `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
 - `$options` is an array containing options for the middleware.
     - `default` is an array containing the policy directives, and will default to *[]*.
     - `report` is an array containing the report-only directives, and will default to *null*.
     - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
 
 ```php
-$middleware = new CspMiddleware($options);
+$middleware = new CspMiddleware($container, $options);
 ```
 
 **Process**

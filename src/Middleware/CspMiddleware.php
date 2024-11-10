@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Fyre\Security\Middleware;
 
+use Fyre\Container\Container;
 use Fyre\Middleware\Middleware;
 use Fyre\Middleware\RequestHandler;
 use Fyre\Security\CspBuilder;
@@ -22,26 +23,31 @@ class CspMiddleware extends Middleware
         'reportTo' => [],
     ];
 
+    protected CspBuilder $cspBuilder;
+
     protected array $reportTo = [];
 
     /**
      * New CspMiddleware constructor.
      *
+     * @param Container $container The Container.
      * @param array $options Options for the middleware.
      */
-    public function __construct(array $options = [])
+    public function __construct(Container $container, array $options = [])
     {
+        $this->cspBuilder = $container->build(CspBuilder::class);
+
         $options = array_replace(static::$defaults, $options);
 
         if ($options['default'] !== null) {
-            CspBuilder::createPolicy(CspBuilder::DEFAULT, $options['default']);
+            $this->cspBuilder->createPolicy(CspBuilder::DEFAULT, $options['default']);
         }
 
         if ($options['report'] !== null) {
-            CspBuilder::createPolicy(CspBuilder::REPORT, $options['report']);
+            $this->cspBuilder->createPolicy(CspBuilder::REPORT, $options['report']);
         }
 
-        CspBuilder::setReportTo($options['reportTo']);
+        $this->cspBuilder->setReportTo($options['reportTo']);
     }
 
     /**
@@ -55,6 +61,6 @@ class CspMiddleware extends Middleware
     {
         $response = $handler->handle($request);
 
-        return CspBuilder::addHeaders($response);
+        return $this->cspBuilder->addHeaders($response);
     }
 }

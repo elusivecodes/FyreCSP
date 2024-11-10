@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Container\Container;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
 use Fyre\Security\Middleware\CspMiddleware;
@@ -11,9 +12,11 @@ use PHPUnit\Framework\TestCase;
 
 final class CspMiddlewareTest extends TestCase
 {
+    protected Container $container;
+
     public function testPolicy(): void
     {
-        $middleware = new CspMiddleware([
+        $middleware = new CspMiddleware($this->container, [
             'default' => [
                 'default-src' => 'self',
             ],
@@ -22,7 +25,7 @@ final class CspMiddlewareTest extends TestCase
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
 
-        $handler = new RequestHandler($queue);
+        $handler = $this->container->build(RequestHandler::class, ['queue' => $queue]);
         $request = new ServerRequest();
 
         $response = $handler->handle($request);
@@ -39,7 +42,7 @@ final class CspMiddlewareTest extends TestCase
 
     public function testReportPolicy(): void
     {
-        $middleware = new CspMiddleware([
+        $middleware = new CspMiddleware($this->container, [
             'report' => [
                 'default-src' => 'self',
                 'report-to' => 'csp-endpoint',
@@ -58,7 +61,7 @@ final class CspMiddlewareTest extends TestCase
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
 
-        $handler = new RequestHandler($queue);
+        $handler = $this->container->build(RequestHandler::class, ['queue' => $queue]);
         $request = new ServerRequest();
 
         $response = $handler->handle($request);
@@ -72,5 +75,10 @@ final class CspMiddlewareTest extends TestCase
             '{"group":"csp-endpoint","max_age":"10886400","endpoints":[{"url":"https://test.com/csp-report"}]}',
             $response->getHeaderValue('Report-To')
         );
+    }
+
+    protected function setUp(): void
+    {
+        $this->container = new Container();
     }
 }
