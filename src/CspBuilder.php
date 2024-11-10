@@ -106,7 +106,7 @@ class CspBuilder
     }
 
     /**
-     * Determine if a policy exists.
+     * Determine whether a policy exists.
      *
      * @param string $key The policy key.
      * @return bool TRUE if the policy exists, otherwise FALSE.

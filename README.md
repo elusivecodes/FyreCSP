@@ -93,7 +93,7 @@ $reportTo = $cspBuilder->getReportTo();
 
 **Has Policy**
 
-Check if a policy exists.
+Determine whether a policy exists.
 
 - `$key` is a string representing the policy key, and should be one of either `CspBuilder::DEFAULT` or `CspBuilder::REPORT`.
 
@@ -156,7 +156,7 @@ $header = $policy->getHeader();
 
 **Has Directive**
 
-Determine if a directive exists.
+Determine whether a directive exists.
 
 - `$directive` is a string representing the directive.
 

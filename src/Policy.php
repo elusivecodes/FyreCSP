@@ -172,7 +172,7 @@ class Policy
     }
 
     /**
-     * Determine if a directive exists.
+     * Determine whether a directive exists.
      *
      * @param string $directive The directive.
      * @return bool TRUE if the directive exists, otherwise FALSE.
@@ -202,7 +202,7 @@ class Policy
     }
 
     /**
-     * Check if a directive is valid.
+     * Determine whether a directive is valid.
      *
      * @param string $directive The directive.
      *
