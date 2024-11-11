@@ -17,12 +17,13 @@ final class CspMiddlewareTest extends TestCase
 
     public function testPolicy(): void
     {
-        $csp = new ContentSecurityPolicy([
-            'default' => [
-                'default-src' => 'self',
+        $middleware = $this->container->build(CspMiddleware::class, [
+            'options' => [
+                'default' => [
+                    'default-src' => 'self',
+                ],
             ],
         ]);
-        $middleware = new CspMiddleware($csp);
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
@@ -44,22 +45,23 @@ final class CspMiddlewareTest extends TestCase
 
     public function testReportPolicy(): void
     {
-        $csp = new ContentSecurityPolicy([
-            'report' => [
-                'default-src' => 'self',
-                'report-to' => 'csp-endpoint',
-            ],
-            'reportTo' => [
-                'group' => 'csp-endpoint',
-                'max_age' => '10886400',
-                'endpoints' => [
-                    [
-                        'url' => 'https://test.com/csp-report',
+        $middleware = $this->container->build(CspMiddleware::class, [
+            'options' => [
+                'report' => [
+                    'default-src' => 'self',
+                    'report-to' => 'csp-endpoint',
+                ],
+                'reportTo' => [
+                    'group' => 'csp-endpoint',
+                    'max_age' => '10886400',
+                    'endpoints' => [
+                        [
+                            'url' => 'https://test.com/csp-report',
+                        ],
                     ],
                 ],
             ],
         ]);
-        $middleware = new CspMiddleware($csp);
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);

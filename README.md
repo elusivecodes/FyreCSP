@@ -29,13 +29,8 @@ use Fyre\Security\ContentSecurityPolicy;
 
 ## Basic Usage
 
-- `$options` is an array containing options for the middleware.
-    - `default` is an array containing the policy directives, and will default to *[]*.
-    - `report` is an array containing the report-only directives, and will default to *null*.
-    - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
-
 ```php
-$csp = new ContentSecurityPolicy($options);
+$csp = new ContentSecurityPolicy();
 ```
 
 **Autoloading**
@@ -194,19 +189,31 @@ $newPolicy = $policy->removeDirective($directive);
 use Fyre\Security\Middleware\CspMiddleware;
 ```
 
-- `$csp` is a *ContentSecurityPolicy*.
+- `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
+- `$options` is an array containing options for the *ContentSecurityPolicy*.
+    - `default` is an array containing the policy directives, and will default to *[]*.
+    - `report` is an array containing the report-only directives, and will default to *null*.
+    - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
 
 ```php
-$middleware = new CspMiddleware($csp);
+$middleware = new CspMiddleware($container, $options);
 ```
 
-**Process**
-
-- `$request` is a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests).
-- `$handler` is a [*RequestHandler*](https://github.com/elusivecodes/FyreMiddleware#request-handlers).
+Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 ```php
-$response = $middleware->process($request, $handler);
+$middleware = $container->build(CspMiddleware::class, ['options' => $options]);
+```
+
+**Handle**
+
+Handle a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests).
+
+- `$request` is a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests).
+- `$next` is a *Closure*.
+
+```php
+$response = $middleware->handle($request, $next);
 ```
 
 This method will return a [*ClientResponse*](https://github.com/elusivecodes/FyreServer#client-responses).

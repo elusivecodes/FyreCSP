@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\Security\Middleware;
 
 use Closure;
+use Fyre\Container\Container;
 use Fyre\Middleware\Middleware;
 use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Server\ClientResponse;
@@ -19,22 +20,33 @@ class CspMiddleware extends Middleware
     /**
      * New CspMiddleware constructor.
      *
-     * @param ContentSecurityPolicy $csp The ContentSecurityPolicy.
-     * @param array $options Options for the middleware.
+     * @param Container $container The Container.
+     * @param array $options Options for the ContentSecurityPolicy.
      */
-    public function __construct(ContentSecurityPolicy $csp)
+    public function __construct(Container $container, array $options = [])
     {
-        $this->csp = $csp;
+        $this->csp = $container->use(ContentSecurityPolicy::class);
+
+        foreach ($options as $key => $value) {
+            switch ($key) {
+                case 'reportTo':
+                    $this->csp->setReportTo($value);
+                    break;
+                default:
+                    $this->csp->createPolicy($key, $value);
+                    break;
+            }
+        }
     }
 
     /**
-     * Process a ServerRequest.
+     * Handle a ServerRequest.
      *
      * @param ServerRequest $request The ServerRequest.
      * @param Closure $next The next handler.
      * @return ClientResponse The ClientResponse.
      */
-    public function __invoke(ServerRequest $request, Closure $next): ClientResponse
+    public function handle(ServerRequest $request, Closure $next): ClientResponse
     {
         return $this->csp->addHeaders($next($request));
     }

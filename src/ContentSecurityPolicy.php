@@ -30,25 +30,6 @@ class ContentSecurityPolicy
     protected array $reportTo = [];
 
     /**
-     * New ContentSecurityPolicy constructor.
-     *
-     * @param array $options The ContentSecurityPolicy options.
-     */
-    public function __construct(array $options = [])
-    {
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'reportTo':
-                    $this->setReportTo($value);
-                    break;
-                default:
-                    $this->createPolicy($key, $value);
-                    break;
-            }
-        }
-    }
-
-    /**
      * Add ContentSecurityPolicy headers to a ClientResponse.
      *
      * @param ClientResponse $response The ClientResponse.

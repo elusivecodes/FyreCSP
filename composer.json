@@ -21,7 +21,7 @@
     },
     "require": {
         "fyre/container": "^1.0",
-        "fyre/middleware": "^4.0",
+        "fyre/middleware": "^5.0",
         "fyre/server": "^3.0"
     },
     "require-dev": {
