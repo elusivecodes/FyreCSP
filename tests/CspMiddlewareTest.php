@@ -6,7 +6,6 @@ namespace Tests;
 use Fyre\Container\Container;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
-use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Security\Middleware\CspMiddleware;
 use Fyre\Server\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -29,7 +28,7 @@ final class CspMiddlewareTest extends TestCase
         $queue->add($middleware);
 
         $handler = $this->container->build(RequestHandler::class, ['queue' => $queue]);
-        $request = new ServerRequest();
+        $request = $this->container->build(ServerRequest::class);
 
         $response = $handler->handle($request);
 
@@ -67,7 +66,7 @@ final class CspMiddlewareTest extends TestCase
         $queue->add($middleware);
 
         $handler = $this->container->build(RequestHandler::class, ['queue' => $queue]);
-        $request = new ServerRequest();
+        $request = $this->container->build(ServerRequest::class);
 
         $response = $handler->handle($request);
 
