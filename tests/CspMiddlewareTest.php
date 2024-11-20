@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Middleware\MiddlewareQueue;
 use Fyre\Middleware\RequestHandler;
@@ -12,17 +13,18 @@ use PHPUnit\Framework\TestCase;
 
 final class CspMiddlewareTest extends TestCase
 {
+    protected Config $config;
+
     protected Container $container;
 
     public function testPolicy(): void
     {
-        $middleware = $this->container->build(CspMiddleware::class, [
-            'options' => [
-                'default' => [
-                    'default-src' => 'self',
-                ],
+        $this->config->set('Csp', [
+            'default' => [
+                'default-src' => 'self',
             ],
         ]);
+        $middleware = $this->container->build(CspMiddleware::class);
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
@@ -44,23 +46,22 @@ final class CspMiddlewareTest extends TestCase
 
     public function testReportPolicy(): void
     {
-        $middleware = $this->container->build(CspMiddleware::class, [
-            'options' => [
-                'report' => [
-                    'default-src' => 'self',
-                    'report-to' => 'csp-endpoint',
-                ],
-                'reportTo' => [
-                    'group' => 'csp-endpoint',
-                    'max_age' => '10886400',
-                    'endpoints' => [
-                        [
-                            'url' => 'https://test.com/csp-report',
-                        ],
+        $this->config->set('Csp', [
+            'report' => [
+                'default-src' => 'self',
+                'report-to' => 'csp-endpoint',
+            ],
+            'reportTo' => [
+                'group' => 'csp-endpoint',
+                'max_age' => '10886400',
+                'endpoints' => [
+                    [
+                        'url' => 'https://test.com/csp-report',
                     ],
                 ],
             ],
         ]);
+        $middleware = $this->container->build(CspMiddleware::class);
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
@@ -84,5 +85,8 @@ final class CspMiddlewareTest extends TestCase
     protected function setUp(): void
     {
         $this->container = new Container();
+        $this->container->singleton(Config::class);
+
+        $this->config = $this->container->use(Config::class);
     }
 }

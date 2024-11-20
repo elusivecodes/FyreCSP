@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Fyre\Security;
 
+use Fyre\Config\Config;
 use Fyre\Security\Exceptions\CspException;
 use Fyre\Server\ClientResponse;
 
@@ -28,6 +29,28 @@ class ContentSecurityPolicy
     protected array $policies = [];
 
     protected array $reportTo = [];
+
+    /**
+     * New ContentSecurityPolicy constructor.
+     *
+     * @param Config $config The Config.
+     */
+    public function __construct(Config $config)
+    {
+        $options = $config->get('Csp', []);
+
+        foreach (static::POLICY_HEADERS as $key => $header) {
+            if (!array_key_exists($key, $options)) {
+                continue;
+            }
+
+            $this->createPolicy($key, $options[$key]);
+        }
+
+        if (array_key_exists('reportTo', $options)) {
+            $this->setReportTo($options['reportTo']);
+        }
+    }
 
     /**
      * Add ContentSecurityPolicy headers to a ClientResponse.

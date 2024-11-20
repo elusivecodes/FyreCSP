@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Security\Policy;
 use PHPUnit\Framework\TestCase;
@@ -130,6 +132,9 @@ final class ContentSecurityPolicyTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->csp = new ContentSecurityPolicy();
+        $container = new Container();
+        $container->singleton(Config::class);
+
+        $this->csp = $container->build(ContentSecurityPolicy::class);
     }
 }

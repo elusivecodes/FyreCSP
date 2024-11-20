@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Fyre\Security\Middleware;
 
 use Closure;
-use Fyre\Container\Container;
 use Fyre\Middleware\Middleware;
 use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Server\ClientResponse;
@@ -20,23 +19,11 @@ class CspMiddleware extends Middleware
     /**
      * New CspMiddleware constructor.
      *
-     * @param Container $container The Container.
-     * @param array $options Options for the ContentSecurityPolicy.
+     * @param ContentSecurityPolicy $csp The ContentSecurityPolicy.
      */
-    public function __construct(Container $container, array $options = [])
+    public function __construct(ContentSecurityPolicy $csp)
     {
-        $this->csp = $container->use(ContentSecurityPolicy::class);
-
-        foreach ($options as $key => $value) {
-            switch ($key) {
-                case 'reportTo':
-                    $this->csp->setReportTo($value);
-                    break;
-                default:
-                    $this->csp->createPolicy($key, $value);
-                    break;
-            }
-        }
+        $this->csp = $csp;
     }
 
     /**

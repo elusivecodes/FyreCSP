@@ -29,9 +29,18 @@ use Fyre\Security\ContentSecurityPolicy;
 
 ## Basic Usage
 
+- `$config` is a [*Config*](https://github.com/elusivecodes/FyreConfig).
+
 ```php
-$csp = new ContentSecurityPolicy();
+$csp = new ContentSecurityPolicy($config);
 ```
+
+Default configuration options will be resolved from the "*Csp*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig).
+
+- `$options` is an array containing configuration options.
+    - `default` is an array containing the policy directives, and will default to `[]`.
+    - `report` is an array containing the report-only directives, and will default to *null*.
+    - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
 
 **Autoloading**
 
@@ -39,6 +48,12 @@ It is recommended to bind the *ContentSecurityPolicy* to the [*Container*](https
 
 ```php
 $container->singleton(ContentSecurityPolicy::class);
+```
+
+Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
+
+```php
+$csp = $container->use(ContentSecurityPolicy::class);
 ```
 
 
@@ -189,20 +204,16 @@ $newPolicy = $policy->removeDirective($directive);
 use Fyre\Security\Middleware\CspMiddleware;
 ```
 
-- `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
-- `$options` is an array containing options for the *ContentSecurityPolicy*.
-    - `default` is an array containing the policy directives, and will default to *[]*.
-    - `report` is an array containing the report-only directives, and will default to *null*.
-    - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
+- `$csp` is a *ContentSecurityPolicy*.
 
 ```php
-$middleware = new CspMiddleware($container, $options);
+$middleware = new CspMiddleware($csp);
 ```
 
 Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 ```php
-$middleware = $container->build(CspMiddleware::class, ['options' => $options]);
+$middleware = $container->build(CspMiddleware::class);
 ```
 
 **Handle**
