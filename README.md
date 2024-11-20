@@ -42,6 +42,10 @@ Default configuration options will be resolved from the "*Csp*" key in the [*Con
     - `report` is an array containing the report-only directives, and will default to *null*.
     - `reportTo` is an array containing the Report-To header value, and will default to *[]*.
 
+```php
+$container->use(Config::class)->set('Csp', $options);
+```
+
 **Autoloading**
 
 It is recommended to bind the *ContentSecurityPolicy* to the [*Container*](https://github.com/elusivecodes/FyreContainer) as a singleton.
