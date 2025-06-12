@@ -14,17 +14,14 @@ use Fyre\Server\ServerRequest;
  */
 class CspMiddleware extends Middleware
 {
-    protected ContentSecurityPolicy $csp;
-
     /**
      * New CspMiddleware constructor.
      *
      * @param ContentSecurityPolicy $csp The ContentSecurityPolicy.
      */
-    public function __construct(ContentSecurityPolicy $csp)
-    {
-        $this->csp = $csp;
-    }
+    public function __construct(
+        protected ContentSecurityPolicy $csp
+    ) {}
 
     /**
      * Handle a ServerRequest.
