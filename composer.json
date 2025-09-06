@@ -22,6 +22,7 @@
     "require": {
         "fyre/config": "^4.1",
         "fyre/container": "^1.0",
+        "fyre/macro": "^1.0",
         "fyre/middleware": "^6.0",
         "fyre/server": "^4.0"
     },

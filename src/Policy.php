@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\Security;
 
 use Fyre\Security\Exceptions\CspException;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_key_exists;
 use function array_map;
@@ -17,6 +18,8 @@ use function preg_match;
  */
 class Policy
 {
+    use MacroTrait;
+
     protected const VALID_DIRECTIVES = [
         'base-uri',
         'block-all-mixed-content',

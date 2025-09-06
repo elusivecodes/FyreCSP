@@ -5,7 +5,10 @@ namespace Tests;
 
 use Fyre\Security\Exceptions\CSPException;
 use Fyre\Security\Policy;
+use Fyre\Utility\Traits\MacroTrait;
 use PHPUnit\Framework\TestCase;
+
+use function class_uses;
 
 final class PolicyTest extends TestCase
 {
@@ -177,6 +180,14 @@ final class PolicyTest extends TestCase
         $policy = new Policy();
 
         $policy->hasDirective('invalid');
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(Policy::class)
+        );
     }
 
     public function testRemoveDirective(): void

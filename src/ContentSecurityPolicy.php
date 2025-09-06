@@ -6,6 +6,7 @@ namespace Fyre\Security;
 use Fyre\Config\Config;
 use Fyre\Security\Exceptions\CspException;
 use Fyre\Server\ClientResponse;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_key_exists;
 use function json_encode;
@@ -17,6 +18,8 @@ use const JSON_UNESCAPED_SLASHES;
  */
 class ContentSecurityPolicy
 {
+    use MacroTrait;
+
     public const DEFAULT = 'default';
 
     public const REPORT = 'report';

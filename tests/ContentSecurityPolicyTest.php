@@ -7,7 +7,10 @@ use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Security\ContentSecurityPolicy;
 use Fyre\Security\Policy;
+use Fyre\Utility\Traits\MacroTrait;
 use PHPUnit\Framework\TestCase;
+
+use function class_uses;
 
 final class ContentSecurityPolicyTest extends TestCase
 {
@@ -83,6 +86,14 @@ final class ContentSecurityPolicyTest extends TestCase
     {
         $this->assertFalse(
             $this->csp->hasPolicy('invalid')
+        );
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(ContentSecurityPolicy::class)
         );
     }
 
